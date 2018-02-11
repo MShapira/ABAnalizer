@@ -1,0 +1,130 @@
+# Input sequence
+# ANARCI numbered
+# Domain 1 of 1
+# Most significant HMM hit
+#|species|chain_type|e-value|score|seqstart_index|seqend_index|
+#|rat|H|2.2e-48|154.4|0|121|
+# Scheme = chothia
+H 1       Q
+H 2       V
+H 3       Q
+H 4       L
+H 5       Q
+H 6       E
+H 7       S
+H 8       G
+H 9       G
+H 10      G
+H 11      L
+H 12      V
+H 13      Q
+H 14      P
+H 15      G
+H 16      G
+H 17      S
+H 18      L
+H 19      R
+H 20      L
+H 21      S
+H 22      C
+H 23      S
+H 24      A
+H 25      S
+H 26      G
+H 27      F
+H 28      K
+H 29      F
+H 30      N
+H 31      D
+H 32      S
+H 33      Y
+H 34      M
+H 35      S
+H 36      W
+H 37      V
+H 38      R
+H 39      R
+H 40      V
+H 41      P
+H 42      G
+H 43      K
+H 44      G
+H 45      L
+H 46      E
+H 47      W
+H 48      V
+H 49      A
+H 50      G
+H 51      I
+H 52      W
+H 52    A E
+H 53      D
+H 54      S
+H 55      S
+H 56      A
+H 57      A
+H 58      H
+H 59      Y
+H 60      R
+H 61      D
+H 62      S
+H 63      V
+H 64      K
+H 65      G
+H 66      R
+H 67      F
+H 68      T
+H 69      I
+H 70      S
+H 71      R
+H 72      D
+H 73      N
+H 74      A
+H 75      K
+H 76      N
+H 77      M
+H 78      L
+H 79      Y
+H 80      L
+H 81      Q
+H 82      M
+H 82    A S
+H 82    B S
+H 82    C L
+H 83      K
+H 84      S
+H 85      D
+H 86      D
+H 87      T
+H 88      G
+H 89      L
+H 90      Y
+H 91      Y
+H 92      C
+H 93      V
+H 94      R
+H 95      R
+H 96      G
+H 97      Y
+H 98      S
+H 99      G
+H 100     D
+H 100   A Y
+H 100   B R
+H 100   C P
+H 100   D I
+H 100   E N
+H 101     N
+H 102     P
+H 103     S
+H 104     S
+H 105     Q
+H 106     G
+H 107     T
+H 108     Q
+H 109     V
+H 110     T
+H 111     V
+H 112     S
+H 113     S
+//
