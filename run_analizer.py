@@ -3,6 +3,7 @@ from classes.antiboby import Antibody
 
 
 def sequences_parser(filename: str)->list:
+
     antibodies = []
     str = ''
 
@@ -24,6 +25,7 @@ def sequences_parser(filename: str)->list:
                 host = laa[2]
                 res = laa[3]
                 # initiate an object of class Antibody
+                # todo: write a filter to rid out of the sequence duplicates
                 antibody = Antibody(name=name, host=host, resource_of_origin=res)
 
                 # define what kind of seq do we have
@@ -43,8 +45,9 @@ def sequences_parser(filename: str)->list:
 antibodies = sequences_parser('VHH_al.fa')
 
 
-for ab in antibodies[1:2]:
+for ab in antibodies[1:5]:
     ab.protein_sequence.construct_seq_dict()
+    ab.protein_sequence.identify_cdrs_and_frameworks()
     print('Name: {0}'.format(ab.name))
     print('Host organism: {0}'.format(ab.host))
     print('Resource: {0}'.format(ab.resource_of_origin))
