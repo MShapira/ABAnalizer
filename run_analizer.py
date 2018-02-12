@@ -1,5 +1,6 @@
 from classes.sequence import ProteinSequence
 from classes.antiboby import Antibody
+from analytics import calculate_position_distribution
 
 
 def sequences_parser(filename: str)->list:
@@ -44,8 +45,7 @@ def sequences_parser(filename: str)->list:
 
 antibodies = sequences_parser('VHH_al.fa')
 
-
-for ab in antibodies[1:5]:
+for ab in antibodies[1:500]:
     ab.protein_sequence.construct_seq_dict()
     ab.protein_sequence.identify_cdrs_and_frameworks()
     print('Name: {0}'.format(ab.name))
@@ -55,3 +55,4 @@ for ab in antibodies[1:5]:
     print('-' * 30)
 print(len(antibodies))
 print("#" * 30)
+aad = calculate_position_distribution(antibodies[1:500])
