@@ -20,7 +20,7 @@ def calculate_position_distribution(antibodies: list)->AADistribution:
                 aminoacids.append(ab.protein_sequence.seq_dict[key])
             except KeyError:
                 continue
-        pd = PositionDistribution(position=key, aa_array=aminoacids)
+        pd = PositionDistribution(position=key, aa_array=aminoacids, maxlen=len(antibodies))
         pd.aa_part_counter()
         aad.positions[key] = pd
 

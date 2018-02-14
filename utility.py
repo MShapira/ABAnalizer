@@ -1,4 +1,5 @@
 from sys import stdout
+import statistics
 
 
 # smart progress bar

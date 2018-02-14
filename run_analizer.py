@@ -9,7 +9,8 @@ def sequences_parser(filename: str)->list:
     str = ''
 
     with open(filename) as file:
-        for line in file.readlines():
+        lines = file.readlines()
+        for line in lines:
             line= line.rstrip()
             # the way to find new seq and initiate new object
             if list(line)[0] == '>':
@@ -40,12 +41,16 @@ def sequences_parser(filename: str)->list:
 
             else:
                 str = str + line
+                # to fill the last line
+                if line == lines[-1].rstrip():
+                    protein_sequence = ProteinSequence(seq=str)
+                    antibodies[-1].protein_sequence = protein_sequence
 
     return antibodies
 
 antibodies = sequences_parser('VHH_al.fa')
 
-for ab in antibodies[1:500]:
+for ab in antibodies:
     ab.protein_sequence.construct_seq_dict()
     ab.protein_sequence.identify_cdrs_and_frameworks()
     print('Name: {0}'.format(ab.name))
@@ -55,4 +60,4 @@ for ab in antibodies[1:500]:
     print('-' * 30)
 print(len(antibodies))
 print("#" * 30)
-aad = calculate_position_distribution(antibodies[1:500])
+aad = calculate_position_distribution(antibodies)
