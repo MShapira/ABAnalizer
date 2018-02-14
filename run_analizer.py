@@ -1,6 +1,7 @@
 from classes.sequence import ProteinSequence
 from classes.antiboby import Antibody
 from analytics import calculate_position_distribution
+from utility import create_session_folder
 
 
 def sequences_parser(filename: str)->list:
@@ -40,7 +41,7 @@ def sequences_parser(filename: str)->list:
                 antibodies.append(antibody)
 
             else:
-                str = str + line
+                str += line
                 # to fill the last line
                 if line == lines[-1].rstrip():
                     protein_sequence = ProteinSequence(seq=str)
@@ -48,6 +49,7 @@ def sequences_parser(filename: str)->list:
 
     return antibodies
 
+create_session_folder()
 antibodies = sequences_parser('VHH_al.fa')
 
 for ab in antibodies:
@@ -58,6 +60,5 @@ for ab in antibodies:
     print('Resource: {0}'.format(ab.resource_of_origin))
     print('Sequence: {0}'.format(ab.protein_sequence))
     print('-' * 30)
-print(len(antibodies))
 print("#" * 30)
 aad = calculate_position_distribution(antibodies)

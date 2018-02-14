@@ -1,8 +1,11 @@
 from classes.analytics import PositionDistribution, AADistribution
+from utility import show_progress
 
 
 # get distributions of aminoacid positions
 def calculate_position_distribution(antibodies: list)->AADistribution:
+    # todo: refactor for normal bar working
+    show_progress('processing the analysis', percentage=0.05)
     aad = AADistribution()
 
     # we need to collect all keys in our proteins
@@ -22,6 +25,7 @@ def calculate_position_distribution(antibodies: list)->AADistribution:
                 continue
         pd = PositionDistribution(position=key, aa_array=aminoacids, maxlen=len(antibodies))
         pd.aa_part_counter()
+        pd.generate_pict()
         aad.positions[key] = pd
 
     return aad
