@@ -4,7 +4,7 @@ from os import makedirs, path
 
 
 # smart progress bar
-def show_progress(label: str, percentage: float, width: int = 40):
+def show_progress(label: str, percentage: float, width: int = 50):
     progress = '['
     for i in range(0, width):
         if i / width < percentage:
@@ -12,7 +12,7 @@ def show_progress(label: str, percentage: float, width: int = 40):
         else:
             progress += ' '
     progress += '] {0:.1%}'.format(percentage)
-    print('\r' + label + progress, end='')
+    print('\r' + label + progress + '\n', end='')
     stdout.flush()
 
 
@@ -34,3 +34,15 @@ def create_session_folder() -> str:
         file.close()
 
     return session_folder_name
+
+
+# print data to log file instead of terminal output
+def print_to_log(string: str):
+    with open('sessions/folder_name.txt', 'r') as file:
+        file_name = file.readline().rstrip() + '/session.log'
+        file.close()
+
+    with open (file_name, 'a') as log:
+        log.write(string + '\n')
+        log.close()
+
