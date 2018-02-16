@@ -1,7 +1,7 @@
 from classes.sequence import ProteinSequence
 from classes.antiboby import Antibody
 from analytics import calculate_position_distribution
-from utility import create_session_folder
+from utility import create_session_folder, show_progress
 
 
 def sequences_parser(filename: str)->list:
@@ -11,10 +11,21 @@ def sequences_parser(filename: str)->list:
 
     with open(filename) as file:
         lines = file.readlines()
+
+        # smart bar for getting the time remaining
+        progress_label = 'Parsing the input data'
+        show_progress(progress_label, 0.0)
+        index = 0
+
         for line in lines:
-            line= line.rstrip()
+
+            # for appropriate work of smart bar
+            index += 1
+            show_progress(progress_label, float(index) / float(len(lines)))
+
+            line = line.rstrip()
             # the way to find new seq and initiate new object
-            if list(line)[0] == '>':
+            if line[0] == '>':
 
                 # add the sequence to its antibody object as to a previous object in antibodies list
                 if len(antibodies) != 0 and str != '':
@@ -52,7 +63,17 @@ def sequences_parser(filename: str)->list:
 create_session_folder()
 antibodies = sequences_parser('VHH_al.fa')
 
-for ab in antibodies[1:5]:
+# smart bar for getting the time remaining
+progress_label = 'Processing the cdr and frameworks filling'
+show_progress(progress_label, 0.0)
+index = 0
+
+for ab in antibodies:
+
+    # for appropriate work of smart bar
+    index += 1
+    show_progress(progress_label, float(index) / float(len(antibodies)))
+
     ab.protein_sequence.construct_seq_dict()
     ab.protein_sequence.identify_cdrs_and_frameworks()
     print('Name: {0}'.format(ab.name))
@@ -61,4 +82,4 @@ for ab in antibodies[1:5]:
     print('Sequence: {0}'.format(ab.protein_sequence))
     print('-' * 30)
 print("#" * 30)
-aad = calculate_position_distribution(antibodies[1:5])
+aad = calculate_position_distribution(antibodies)

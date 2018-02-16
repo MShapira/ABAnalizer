@@ -4,7 +4,7 @@ from os import makedirs, path
 
 
 # smart progress bar
-def show_progress(label: str, percentage: float, width: int = 40):
+def show_progress(label: str, percentage: float, width: int = 50):
     progress = '['
     for i in range(0, width):
         if i / width < percentage:
@@ -12,7 +12,7 @@ def show_progress(label: str, percentage: float, width: int = 40):
         else:
             progress += ' '
     progress += '] {0:.1%}'.format(percentage)
-    print('\r' + label + progress, end='')
+    print('\r' + label + progress + '\n', end='')
     stdout.flush()
 
 

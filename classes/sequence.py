@@ -10,8 +10,6 @@ class ProteinSequence:
         self.seq_dict = {}
         self.frameworks = {}
         self.CDRs = {}
-        # self.construct_seq_dict()
-        # self.identify_cdrs_and_frameworks()
 
     # construct dictionary of aminoacids via its numbering
     def construct_seq_dict(self, scheme='c'):
