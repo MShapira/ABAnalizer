@@ -1,7 +1,7 @@
 from classes.sequence import ProteinSequence
 from classes.antiboby import Antibody
 from analytics import calculate_position_distribution
-from utility import create_session_folder, show_progress
+from utility import create_session_folder, show_progress, print_to_log
 
 
 def sequences_parser(filename: str)->list:
@@ -76,10 +76,10 @@ for ab in antibodies:
 
     ab.protein_sequence.construct_seq_dict()
     ab.protein_sequence.identify_cdrs_and_frameworks()
-    print('Name: {0}'.format(ab.name))
-    print('Host organism: {0}'.format(ab.host))
-    print('Resource: {0}'.format(ab.resource_of_origin))
-    print('Sequence: {0}'.format(ab.protein_sequence))
-    print('-' * 30)
-print("#" * 30)
+    print_to_log('Name: {0}'.format(ab.name))
+    print_to_log('Host organism: {0}'.format(ab.host))
+    print_to_log('Resource: {0}'.format(ab.resource_of_origin))
+    print_to_log('Sequence: {0}'.format(ab.protein_sequence))
+    print_to_log('-' * 30)
+print_to_log("#" * 30)
 aad = calculate_position_distribution(antibodies)

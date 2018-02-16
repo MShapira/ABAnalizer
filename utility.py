@@ -34,3 +34,15 @@ def create_session_folder() -> str:
         file.close()
 
     return session_folder_name
+
+
+# print data to log file instead of terminal output
+def print_to_log(string: str):
+    with open('sessions/folder_name.txt', 'r') as file:
+        file_name = file.readline().rstrip() + '/session.log'
+        file.close()
+
+    with open (file_name, 'a') as log:
+        log.write(string + '\n')
+        log.close()
+
