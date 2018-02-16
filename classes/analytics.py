@@ -26,7 +26,6 @@ class PositionDistribution:
         for position in positions_with_aa_count:
             self.parts_dict[position[0]] = position[1]/sum
 
-
     # generate picture of the distribution
     def generate_pict(self):
         x_coordinate = np.arange(len(self.parts_dict))
