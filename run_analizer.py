@@ -52,7 +52,7 @@ def sequences_parser(filename: str)->list:
 create_session_folder()
 antibodies = sequences_parser('VHH_al.fa')
 
-for ab in antibodies:
+for ab in antibodies[1:5]:
     ab.protein_sequence.construct_seq_dict()
     ab.protein_sequence.identify_cdrs_and_frameworks()
     print('Name: {0}'.format(ab.name))
@@ -61,4 +61,4 @@ for ab in antibodies:
     print('Sequence: {0}'.format(ab.protein_sequence))
     print('-' * 30)
 print("#" * 30)
-aad = calculate_position_distribution(antibodies)
+aad = calculate_position_distribution(antibodies[1:5])
