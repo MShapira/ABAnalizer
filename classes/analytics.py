@@ -59,6 +59,12 @@ class PositionDistribution:
             plt.savefig(folder_name + file_name)
             plt.close()
 
+    def __str__(self):
+        return 'Position: {0}\n'.format(self.position) + \
+               'Amino acid parts: {0}\n'.format(self.parts_dict) + \
+               'Maximal length: {0}\n'.format(self.maxlen) + \
+               '\n'
+
 
 class AADistribution:
     def __init__(self):

@@ -1,6 +1,7 @@
 from sys import stdout
 from datetime import datetime
 from os import makedirs, path
+from pandas import read_csv
 
 
 # smart progress bar
@@ -45,4 +46,22 @@ def print_to_log(string: str):
     with open (file_name, 'a') as log:
         log.write(string + '\n')
         log.close()
+
+
+# read data from csv file
+def read_from_csv(csv_file_name: str, ref_column: str)-> dict:
+    # generate dictionary with column names as a keys
+    primary_dict = read_csv(csv_file_name, header=0).to_dict()
+
+    # refactor primary dictionary to 20 dicts
+    lines_names = {}
+    for index in primary_dict[ref_column]:
+        name = primary_dict[ref_column][index]
+        lines_names[name] = {}
+        for key in primary_dict.keys():
+            if key != ref_column:
+                lines_names[name][key] = primary_dict.get(key)[index]
+
+    return lines_names
+
 

@@ -1,5 +1,5 @@
 from classes.analytics import PositionDistribution, AADistribution
-from utility import show_progress
+from utility import show_progress, print_to_log
 
 
 # get distributions of aminoacid positions

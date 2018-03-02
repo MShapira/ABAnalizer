@@ -12,7 +12,7 @@ class ProteinSequence:
         self.CDRs = {}
 
     # construct dictionary of aminoacids via its numbering
-    def construct_seq_dict(self, scheme='c'):
+    def construct_seq_dict(self, scheme: str ='c'):
 
         # get ANARCI results
         # todo: add an opportunity to choose method ("chotia" is default)

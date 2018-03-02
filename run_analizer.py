@@ -68,11 +68,11 @@ progress_label = 'Processing the cdr and frameworks filling'
 show_progress(progress_label, 0.0)
 index = 0
 
-for ab in antibodies:
+for ab in antibodies[1:20]:
 
     # for appropriate work of smart bar
     index += 1
-    show_progress(progress_label, float(index) / float(len(antibodies)))
+    show_progress(progress_label, float(index) / float(len(antibodies[1:20])))
 
     ab.protein_sequence.construct_seq_dict()
     ab.protein_sequence.identify_cdrs_and_frameworks()
@@ -82,4 +82,4 @@ for ab in antibodies:
     print_to_log('Sequence: {0}'.format(ab.protein_sequence))
     print_to_log('-' * 30)
 print_to_log("#" * 30)
-aad = calculate_position_distribution(antibodies)
+aad = calculate_position_distribution(antibodies[1:20])
