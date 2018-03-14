@@ -1,39 +1,1 @@
-from classes.analytics import PositionDistribution, AADistribution
-from utility import show_progress, print_to_log
-
-
-# get distributions of aminoacid positions
-def calculate_position_distribution(antibodies: list)->AADistribution:
-    aad = AADistribution()
-
-    # we need to collect all keys in our proteins
-    longest_dict_keys = []
-    for ab in antibodies:
-        for key in ab.protein_sequence.seq_dict.keys():
-            if key not in longest_dict_keys:
-                longest_dict_keys.append(key)
-
-    # smart bar for getting the time remaining
-    progress_label = 'Generating pictures'
-    show_progress(progress_label, 0.0)
-    index = 0
-
-    # collect the information about the aminoacid positions
-    for key in longest_dict_keys:
-
-        # for smart bar
-        index += 1
-        show_progress(progress_label, float(index) / float(len(longest_dict_keys)))
-
-        aminoacids = []
-        for ab in antibodies:
-            try:
-                aminoacids.append(ab.protein_sequence.seq_dict[key])
-            except KeyError:
-                continue
-        pd = PositionDistribution(position=key, aa_array=aminoacids, maxlen=len(antibodies))
-        pd.aa_part_counter()
-        pd.generate_pict()
-        aad.positions[key] = pd
-
-    return aad
+from classes.analytics import PositionDistribution, AADistributionfrom utility import show_progress, print_to_log, read_from_csv# get distributions of aminoacid positionsdef calculate_position_distribution(antibodies: list)->AADistribution:    aad = AADistribution()    # we need to collect all keys in our proteins    longest_dict_keys = []    for ab in antibodies:        for key in ab.protein_sequence.seq_dict.keys():            if key not in longest_dict_keys:                longest_dict_keys.append(key)    # smart bar for getting the time remaining    progress_label = 'Generating pictures'    show_progress(progress_label, 0.0)    index = 0    # collect the information about the aminoacid positions    for key in longest_dict_keys:        # for smart bar        index += 1        show_progress(progress_label, float(index) / float(len(longest_dict_keys)))        aminoacids = []        for ab in antibodies:            try:                aminoacids.append(ab.protein_sequence.seq_dict[key])            except KeyError:                continue        pd = PositionDistribution(position=key, aa_array=aminoacids, maxlen=len(antibodies))        pd.aa_part_counter()        pd.generate_aa_distribution_pict()        aad.positions[key] = pd    return aad# construct the aminoacids properties listdef construct_aa_prop_list()-> dict:    # get data from files    kidera = read_from_csv('ref_mat/Kidera_factors.csv', '3-Letter')    phy_chem = read_from_csv('ref_mat/AA_params_table.csv', '3-Letter')    # combine the data    for factor in kidera.keys():        for parameter in phy_chem.keys():            if factor.upper() == parameter.upper():                kidera[factor].update(phy_chem[parameter])    # print 1-letter code to folder_name.txt    with open('sessions/folder_name.txt', 'a') as file:        aminoacids = []        line = ''        for key in kidera:            aminoacids.append(kidera[key]['1-Letter'])        for aa in sorted(aminoacids):            line += aa        file.write(line + '\n')        file.close()    return kidera

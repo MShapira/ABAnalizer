@@ -1,7 +1,10 @@
 from sys import stdout
 from datetime import datetime
 from os import makedirs, path
+import matplotlib.pyplot as plt
 from pandas import read_csv
+from matplotlib.ticker import FuncFormatter
+import numpy as np
 
 
 # smart progress bar
@@ -31,7 +34,7 @@ def create_session_folder() -> str:
     # мне нужно место, куда я могу обращаться и брать имя сессии
     # с любой точки скрипта
     with open(session_root_folder + '/folder_name.txt', 'w') as file:
-        file.write(session_folder_name)
+        file.write(session_folder_name + '\n')
         file.close()
 
     return session_folder_name
@@ -63,5 +66,32 @@ def read_from_csv(csv_file_name: str, ref_column: str)-> dict:
                 lines_names[name][key] = primary_dict.get(key)[index]
 
     return lines_names
+
+
+# building the graph
+def generate_bar_chart(xlabels: list, percents: list, position: str, fld_name: str, x_coordinate: int = 20):
+
+    # generate labels on Y axis
+    def generate_y_axis_labels(x_coordinate, pos):
+        return '{0:2.2f}%'.format(x_coordinate * 100)
+
+    formatter = FuncFormatter(generate_y_axis_labels)
+
+    # build the plot
+    fig, ax = plt.subplots()
+    ax.set_title('Aminoacids')
+    ax.yaxis.set_major_formatter(formatter)
+    plt.bar(x_coordinate, percents)
+    plt.xticks(x_coordinate, xlabels)
+
+    file_name = '{0}.png'.format(position)
+    with open('sessions/folder_name.txt', 'r') as file:
+        folder_name = file.readline().rstrip() + '/pictures/' + fld_name + '/'
+        if not path.exists(folder_name):
+            makedirs(folder_name)
+        file.close()
+        # saving the file to the folder inside the session
+        plt.savefig(folder_name + file_name)
+        plt.close()
 
 

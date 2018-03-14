@@ -1,6 +1,6 @@
 from classes.sequence import ProteinSequence
 from classes.antiboby import Antibody
-from analytics import calculate_position_distribution
+from analytics import calculate_position_distribution, construct_aa_prop_list
 from utility import create_session_folder, show_progress, print_to_log
 
 
@@ -61,6 +61,7 @@ def sequences_parser(filename: str)->list:
     return antibodies
 
 create_session_folder()
+construct_aa_prop_list()
 antibodies = sequences_parser('VHH_al.fa')
 
 # smart bar for getting the time remaining
