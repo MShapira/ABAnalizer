@@ -3,6 +3,7 @@ import numpy as np
 from numpy.linalg import norm
 import gc
 import pprint
+from os import makedirs, path
 
 
 def construct_dict(final_table: dict) -> dict:
@@ -24,23 +25,23 @@ def construct_dict(final_table: dict) -> dict:
     return d
 
 
-def print_to_file(name: str, data: dict):
-    with open(name + '.csv', 'w', newline='\n') as file:
-        first_line = ['']
+# run one dtw calculation
+def dtw_pare_comparing(pare: dict):
+    if not path.exists('results/'):
+        makedirs('results/')
 
-        for key in tuple(sorted(data.keys())):
-            if key[0] not in first_line:
-                first_line.append(key[0])
-        first_line.append('\n')
-        file.write(str(first_line))
+    with open('results/' + pare['key']['name'] + '-' + pare['aa']['name'], 'w') as file:
+        print('Begin with ', pare['key']['name'], ' and ', pare['aa']['name'])
+        x = np.array([int(round(float(v), 4) * 10000) for v in pare['key']['value']]).reshape(-1, 1)
+        print(pare['key']['name'], ' array is done')
+        y = np.array([int(round(float(v), 4) * 10000) for v in pare['aa']['value']]).reshape(-1, 1)
+        print(pare['aa']['name'],' array is done')
+        dist = dtw(x, y, dist=lambda x, y: norm(x - y, ord=1))[0]
+        gc.collect()
+        print('Distance between ', pare['key']['name'], ' and ', pare['aa']['name'], ' is: ', dist / 10000)
+        print('-' * 50)
 
-        line = []
-        for key in tuple(sorted(data.keys())):
-            if key[0] not in line:
-                line.append(key[0])
-            else:
-                line.append(float(data[key][0]))
-        file.write(str(line))
+        file.write(str(dist/10000))
         file.close()
 
 
@@ -56,7 +57,7 @@ with open('real_rmsd.txt', 'r') as file:
 
     # fill the dictionary
     # todo: refactor for more universal using
-    for line in lines[1:]:
+    for line in lines[1:20]:
         rmsd['Ala'].append(line.strip().split('\t')[0])
         rmsd['Arg'].append(line.strip().split('\t')[1])
         rmsd['Asn'].append(line.strip().split('\t')[2])
@@ -84,26 +85,8 @@ with open('real_rmsd.txt', 'r') as file:
         final_table[key] = {}
         for aa in rmsd.keys():
             if aa not in final_table[key].keys() and aa not in final_table.keys():
-                print('Begin with ', key, ' and ', aa)
-                x = np.array([int(round(float(v), 4) * 10000) for v in rmsd[key]]).reshape(-1, 1)
-                print(key, ' array is done')
-                y = np.array([int(round(float(v), 4) * 10000) for v in rmsd[aa]]).reshape(-1, 1)
-                print(aa, ' array is done')
-                dist, cost, acc, path = dtw(x, y, dist=lambda x, y: norm(x - y, ord=1))
-                final_table[key][aa] = dist/10000
-                gc.collect()
-                print('Distance between ', key, ' and ', aa, ' is: ', dist / 10000)
-                print('-' * 50)
-
-    print('final_table')
-    pp.pprint(final_table)
-
-    dist = construct_dict(final_table)
-
-    print('dist')
-    pp.pprint(dist)
-
-    # print_to_file('dist', dist)
+                pare = {'key': {'name': key, 'value': rmsd[key]}, 'aa': {'name': aa, 'value': rmsd[aa]}}
+                dtw_pare_comparing(pare)
 
 
 
