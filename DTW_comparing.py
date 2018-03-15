@@ -5,44 +5,43 @@ import gc
 import pprint
 
 
-# def construct_dict(dict_name: str, final_table: dict) -> dict:
-#     d = {}
-#     names = []
-#
-#     for key in final_table.keys():
-#         for aa in final_table[key]:
-#             name = tuple([key, aa].sort())
-#
-#             if name not in names:
-#                 d[name] = []
-#                 d[name].append(final_table[key][aa][str(dict_name)])
-#             else:
-#                 d[name].append(final_table[key][aa][str(dict_name)])
-#
-#             names.append(name)
-#
-#     return d
-#
-#
-# def print_to_file(name: str, data: dict):
-#     with open(name + '.csv', 'w', newline='') as file:
-#         first_line = [';']
-#
-#         for key in tuple(sorted(data.keys())):
-#             if key[0] not in first_line:
-#                 first_line.append(key[0])
-#                 first_line.append(';')
-#                 first_line.append('')
-#         file.write(first_line)
-#
-#         line = []
-#         for key in tuple(sorted(data.keys())):
-#             if key[0] not in line:
-#                 line.append('')
-#                 line.append(key[0])
-#                 line.append(';')
-#             else:
-#                 line.append(data[key])
+def construct_dict(final_table: dict) -> dict:
+    d = {}
+    names = []
+
+    for key in final_table.keys():
+        for aa in final_table[key]:
+            name = tuple(sorted([key, aa]))
+
+            if name not in names:
+                d[name] = []
+                d[name].append(final_table[key][aa])
+            else:
+                d[name].append(final_table[key][aa])
+
+            names.append(name)
+
+    return d
+
+
+def print_to_file(name: str, data: dict):
+    with open(name + '.csv', 'w', newline='\n') as file:
+        first_line = ['']
+
+        for key in tuple(sorted(data.keys())):
+            if key[0] not in first_line:
+                first_line.append(key[0])
+        first_line.append('\n')
+        file.write(str(first_line))
+
+        line = []
+        for key in tuple(sorted(data.keys())):
+            if key[0] not in line:
+                line.append(key[0])
+            else:
+                line.append(float(data[key][0]))
+        file.write(str(line))
+        file.close()
 
 
 with open('real_rmsd.txt', 'r') as file:
@@ -91,17 +90,20 @@ with open('real_rmsd.txt', 'r') as file:
                 y = np.array([int(round(float(v), 4) * 10000) for v in rmsd[aa]]).reshape(-1, 1)
                 print(aa, ' array is done')
                 dist, cost, acc, path = dtw(x, y, dist=lambda x, y: norm(x - y, ord=1))
-                final_table[key][aa] = {'dist': dist/10000, 'cost': cost/10000, 'acc': acc/10000, 'path': path/10000}
+                final_table[key][aa] = dist/10000
                 gc.collect()
                 print('Distance between ', key, ' and ', aa, ' is: ', dist / 10000)
                 print('-' * 50)
 
+    print('final_table')
     pp.pprint(final_table)
 
-    # dist = construct_dict('dist', final_table)
-    # cost = construct_dict('cost', final_table)
-    # acc = construct_dict('acc', final_table)
-    # path = construct_dict('path', final_table)
+    dist = construct_dict(final_table)
+
+    print('dist')
+    pp.pprint(dist)
+
+    # print_to_file('dist', dist)
 
 
 
