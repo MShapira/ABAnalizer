@@ -1,52 +1,38 @@
 from dtw import dtw
 import numpy as np
+import time
 from numpy.linalg import norm
 import gc
-import pprint
 from os import makedirs, path
+from multiprocessing.dummy import Pool as ThreadPool
+import json
 
-
-def construct_dict(final_table: dict) -> dict:
-    d = {}
-    names = []
-
-    for key in final_table.keys():
-        for aa in final_table[key]:
-            name = tuple(sorted([key, aa]))
-
-            if name not in names:
-                d[name] = []
-                d[name].append(final_table[key][aa])
-            else:
-                d[name].append(final_table[key][aa])
-
-            names.append(name)
-
-    return d
-
+start_time = time.time()
 
 # run one dtw calculation
 def dtw_pare_comparing(pare: dict):
-    if not path.exists('results/'):
-        makedirs('results/')
+    if not path.exists('results'):
+        makedirs('results')
 
-    with open('results/' + pare['key']['name'] + '-' + pare['aa']['name'], 'w') as file:
-        print('Begin with ', pare['key']['name'], ' and ', pare['aa']['name'])
-        x = np.array([int(round(float(v), 4) * 10000) for v in pare['key']['value']]).reshape(-1, 1)
-        print(pare['key']['name'], ' array is done')
-        y = np.array([int(round(float(v), 4) * 10000) for v in pare['aa']['value']]).reshape(-1, 1)
-        print(pare['aa']['name'],' array is done')
+    data = json.loads(pare)[0]
+    print(type(data))
+
+    with open('results/' + data['key']['name'] + '-' + data['aa']['name'], 'w') as file:
+        # print('Begin with ', pare['key']['name'], ' and ', pare['aa']['name'])
+        x = np.array([int(round(float(v), 4) * 10000) for v in data['key']['value']]).reshape(-1, 1)
+        # print(pare['key']['name'], ' array is done')
+        y = np.array([int(round(float(v), 4) * 10000) for v in data['aa']['value']]).reshape(-1, 1)
+        # print(pare['aa']['name'],' array is done')
         dist = dtw(x, y, dist=lambda x, y: norm(x - y, ord=1))[0]
         gc.collect()
-        print('Distance between ', pare['key']['name'], ' and ', pare['aa']['name'], ' is: ', dist / 10000)
-        print('-' * 50)
+        # print('Distance between ', pare['key']['name'], ' and ', pare['aa']['name'], ' is: ', dist / 10000)
+        # print('-' * 50)
 
         file.write(str(dist/10000))
         file.close()
 
 
 with open('real_rmsd.txt', 'r') as file:
-    pp = pprint.PrettyPrinter(indent=4)
     lines = file.readlines()
     rmsd = {}
 
@@ -57,7 +43,7 @@ with open('real_rmsd.txt', 'r') as file:
 
     # fill the dictionary
     # todo: refactor for more universal using
-    for line in lines[1:20]:
+    for line in lines[1:100]:
         rmsd['Ala'].append(line.strip().split('\t')[0])
         rmsd['Arg'].append(line.strip().split('\t')[1])
         rmsd['Asn'].append(line.strip().split('\t')[2])
@@ -79,14 +65,21 @@ with open('real_rmsd.txt', 'r') as file:
         rmsd['Tyr'].append(line.strip().split('\t')[18])
         rmsd['Val'].append(line.strip().split('\t')[19])
 
+    pool = ThreadPool(processes=2)
+
     # calculate and collect the data using dtw lib
     final_table = {}
     for key in rmsd.keys():
         final_table[key] = {}
         for aa in rmsd.keys():
             if aa not in final_table[key].keys() and aa not in final_table.keys():
-                pare = {'key': {'name': key, 'value': rmsd[key]}, 'aa': {'name': aa, 'value': rmsd[aa]}}
-                dtw_pare_comparing(pare)
+                pare = {"key": {"name": key, "value": rmsd[key]}, "aa": {"name": aa, "value": rmsd[aa]}}
+                pare = json.dumps(pare, sort_keys=True, indent=4)
+                results = pool.starmap(dtw_pare_comparing, pare)
+
+    pool.close()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
 
