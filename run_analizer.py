@@ -1,7 +1,8 @@
 from classes.sequence import ProteinSequence
 from classes.antiboby import Antibody
-from analytics import calculate_position_distribution, construct_aa_prop_list
+from analytics import calculate_position_distribution, construct_aa_prop_list, construct_property_profile
 from utility import create_session_folder, show_progress, print_to_log
+from pprint import pprint
 
 
 def sequences_parser(filename: str)->list:
@@ -61,7 +62,8 @@ def sequences_parser(filename: str)->list:
     return antibodies
 
 create_session_folder()
-construct_aa_prop_list()
+kidera = construct_aa_prop_list()
+pprint(kidera)
 antibodies = sequences_parser('VHH_al.fa')
 
 # smart bar for getting the time remaining
@@ -69,11 +71,11 @@ progress_label = 'Processing the cdr and frameworks filling'
 show_progress(progress_label, 0.0)
 index = 0
 
-for ab in antibodies[1:20]:
+for ab in antibodies:
 
     # for appropriate work of smart bar
     index += 1
-    show_progress(progress_label, float(index) / float(len(antibodies[1:20])))
+    show_progress(progress_label, float(index) / float(len(antibodies)))
 
     ab.protein_sequence.construct_seq_dict()
     ab.protein_sequence.identify_cdrs_and_frameworks()
@@ -83,4 +85,7 @@ for ab in antibodies[1:20]:
     print_to_log('Sequence: {0}'.format(ab.protein_sequence))
     print_to_log('-' * 30)
 print_to_log("#" * 30)
-aad = calculate_position_distribution(antibodies[1:20])
+aad = calculate_position_distribution(antibodies)
+
+prop_list = [x for x in kidera['ALA'] if isinstance(kidera['ALA'][x], (float, int))]
+construct_property_profile(aad, prop_list, kidera)

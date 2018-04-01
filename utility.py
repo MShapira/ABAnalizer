@@ -68,8 +68,8 @@ def read_from_csv(csv_file_name: str, ref_column: str)-> dict:
     return lines_names
 
 
-# building the graph
-def generate_bar_chart(xlabels: list, percents: list, position: str, fld_name: str, x_coordinate: int = 20):
+# building the bar graph
+def generate_bar_chart(xlabels: list, percents: list, position: str, fld_name: str, x_coordinate = 20):
 
     # generate labels on Y axis
     def generate_y_axis_labels(x_coordinate, pos):
@@ -81,8 +81,8 @@ def generate_bar_chart(xlabels: list, percents: list, position: str, fld_name: s
     fig, ax = plt.subplots()
     ax.set_title('Aminoacids')
     ax.yaxis.set_major_formatter(formatter)
-    plt.bar(x_coordinate, percents)
-    plt.xticks(x_coordinate, xlabels)
+    plt.bar(np.arange(1, x_coordinate + 1), percents)
+    plt.xticks(np.arange(1, x_coordinate + 1), xlabels)
 
     file_name = '{0}.png'.format(position)
     with open('sessions/folder_name.txt', 'r') as file:
@@ -95,3 +95,20 @@ def generate_bar_chart(xlabels: list, percents: list, position: str, fld_name: s
         plt.close()
 
 
+# build the linear graph
+def generate_linear_chart(x: list, y: list, xlabel: str, ylabel: str, fld_name: str):
+    plt.figure(num=None, figsize=(30, 20), dpi=100)
+    plt.plot(np.arange(1, len(x)+1), y)
+    plt.ylabel(ylabel)
+    plt.xlabel(xlabel)
+    plt.xticks(np.arange(1, len(x)+1), x, rotation='vertical')
+
+    file_name = '{0}.png'.format(ylabel)
+    with open('sessions/folder_name.txt', 'r') as file:
+        folder_name = file.readline().rstrip() + '/pictures/' + fld_name + '/'
+        if not path.exists(folder_name):
+            makedirs(folder_name)
+        file.close()
+        # saving the file to the folder inside the session
+        plt.savefig(folder_name + file_name)
+        plt.close()

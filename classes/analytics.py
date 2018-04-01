@@ -1,6 +1,5 @@
 from collections import Counter
 from utility import generate_bar_chart
-import numpy as np
 
 
 class PositionDistribution:
@@ -10,7 +9,7 @@ class PositionDistribution:
         self.parts_dict = {}
         self.maxlen = maxlen
 
-    # count the number of aminoacids in the array
+    # count the number of amino acids in the array
     def aa_part_counter(self):
         sum = 0
 
