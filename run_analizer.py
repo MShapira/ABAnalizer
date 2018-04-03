@@ -1,7 +1,8 @@
 from classes.sequence import ProteinSequence
 from classes.antiboby import Antibody
-from analytics import calculate_position_distribution
+from analytics import calculate_position_distribution, construct_aa_prop_list, construct_property_profile
 from utility import create_session_folder, show_progress, print_to_log
+from pprint import pprint
 
 
 def sequences_parser(filename: str)->list:
@@ -61,6 +62,8 @@ def sequences_parser(filename: str)->list:
     return antibodies
 
 create_session_folder()
+kidera = construct_aa_prop_list()
+pprint(kidera)
 antibodies = sequences_parser('VHH_al.fa')
 
 # smart bar for getting the time remaining
@@ -83,3 +86,6 @@ for ab in antibodies:
     print_to_log('-' * 30)
 print_to_log("#" * 30)
 aad = calculate_position_distribution(antibodies)
+
+prop_list = [x for x in kidera['ALA'] if isinstance(kidera['ALA'][x], (float, int))]
+construct_property_profile(aad, prop_list, kidera)
