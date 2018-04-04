@@ -14,6 +14,7 @@ import gc
 def sequences_parser(filename: str)->list:
 
     antibodies = []
+    dictionaries = []
     str = ''
 
     with open(filename) as file:
@@ -37,7 +38,16 @@ def sequences_parser(filename: str)->list:
                 # add the sequence to its antibody object as to a previous object in antibodies list
                 if len(antibodies) != 0 and str != '':
                     protein_sequence = ProteinSequence(seq=str)
-                    antibodies[-1].protein_sequence = protein_sequence
+                    # construct the sequence dictionary for each Sequence object
+                    protein_sequence.construct_seq_dict()
+                    # if there is no such dictionary (from Sequence object) in dictionaries list add it to the list and
+                    # add this Sequence object to the Antibody object in the final list
+                    if protein_sequence.seq_dict not in dictionaries:
+                        dictionaries.append(protein_sequence.seq_dict)
+                        antibodies[-1].protein_sequence = protein_sequence
+                    # if there is such dictionary - remove the Antibody object from the final list
+                    else:
+                        antibodies.remove(antibodies[-1])
                     str=''
 
                 # generate hot points in class initiating
@@ -63,38 +73,15 @@ def sequences_parser(filename: str)->list:
                 # to fill the last line
                 if line == lines[-1].rstrip():
                     protein_sequence = ProteinSequence(seq=str)
-                    antibodies[-1].protein_sequence = protein_sequence
+                    protein_sequence.construct_seq_dict()
+                    if protein_sequence.seq_dict not in dictionaries:
+                        dictionaries.append(protein_sequence.seq_dict)
+                        antibodies[-1].protein_sequence = protein_sequence
+                    else:
+                        antibodies.remove(antibodies[-1])
+                    str=''
 
     return antibodies
-
-
-# remove repeats from list of sequences
-def remove_repeats(antibodies: list) -> list:
-    new_antibodies_list = []
-
-    # smart bar for getting the time remaining
-    progress_label = 'Removing sequence duplicates'
-    show_progress(progress_label, 0.0)
-    index = 0
-
-    # left only antibodies with unique dictionaries
-    for antibody in antibodies:
-
-        # for appropriate work of smart bar
-        index += 1
-        show_progress(progress_label, float(index) / float(len(antibodies)))
-
-        if len(new_antibodies_list) != 0:
-            for new_antibody in new_antibodies_list:
-                if antibody.protein_sequence.whole_seq != new_antibody.protein_sequence.whole_seq:
-                    new_antibodies_list.append(antibody)
-        else:
-            new_antibodies_list.append(antibody)
-
-        gc.collect()
-
-    print(len(new_antibodies_list))
-    return new_antibodies_list
 
 
 # smart progress bar

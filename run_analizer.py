@@ -1,11 +1,11 @@
 from analytics import calculate_position_distribution, construct_aa_prop_list, construct_property_profile
-from utility import create_session_folder, show_progress, print_to_log, remove_repeats, sequences_parser
+from utility import create_session_folder, show_progress, print_to_log, sequences_parser
 from pprint import pprint
 
 create_session_folder()
 kidera = construct_aa_prop_list()
 pprint(kidera)
-antibodies = remove_repeats(sequences_parser('VHH_al.fa'))
+antibodies = sequences_parser('VHH_al.fa')
 
 # smart bar for getting the time remaining
 progress_label = 'Processing the cdr and frameworks filling'
@@ -18,7 +18,6 @@ for ab in antibodies:
     index += 1
     show_progress(progress_label, float(index) / float(len(antibodies)))
 
-    ab. protein_sequence.construct_seq_dict()
     ab.protein_sequence.identify_cdrs_and_frameworks()
     print_to_log('Name: {0}'.format(ab.name))
     print_to_log('Host organism: {0}'.format(ab.host))
