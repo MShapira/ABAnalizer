@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from pandas import read_csv
 from matplotlib.ticker import FuncFormatter
 import numpy as np
-import gc
 
 
 # parsing of data file with sequences
