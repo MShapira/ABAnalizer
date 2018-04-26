@@ -1,5 +1,5 @@
 from analytics import calculate_position_distribution, construct_aa_prop_list, construct_property_profile
-from utility import create_session_folder, show_progress, print_to_log, sequences_parser, get_longest_cdrs_and_frameworks
+from utility import create_session_folder, show_progress, print_to_log, sequences_parser
 from pprint import pprint
 
 
@@ -26,7 +26,6 @@ for ab in antibodies[1:20]:
     print_to_log('-' * 30)
 print_to_log("#" * 30)
 aad = calculate_position_distribution(antibodies[1:20])
-get_longest_cdrs_and_frameworks(antibodies[1:20])
 
 prop_list = [x for x in kidera['ALA'] if isinstance(kidera['ALA'][x], (float, int))]
 construct_property_profile(aad, prop_list, kidera)
