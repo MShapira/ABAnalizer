@@ -49,5 +49,31 @@ class PositionDistribution:
 
 
 class AADistribution:
-    def __init__(self):
+    def __init__(self, antibodies: list):
+        self.antibodies = antibodies
+        self.frameworks = {
+            'fr_1': [],
+            'fr_2': [],
+            'fr_3': [],
+            'fr_4': []
+        }
+        self.cdrs = {
+            'cdr_1': [],
+            'cdr_2': [],
+            'cdr_3': []
+        }
         self.positions = {}
+
+    # get longest CDRs and Frameworks numbers via dictionary numbering
+    def get_longest_cdrs_and_frameworks(self):
+        # find the longest framework and cdr in each position
+        # for frameworks
+        for antibody in self.antibodies:
+            for key in self.frameworks:
+                if len(self.frameworks[key]) < len(antibody.protein_sequence.frameworks[key]):
+                    self.frameworks[key] = antibody.protein_sequence.frameworks[key]
+
+            # for cdrs
+            for key in self.cdrs:
+                if len(self.cdrs[key]) < len(antibody.protein_sequence.CDRs[key]):
+                    self.cdrs[key] = antibody.protein_sequence.CDRs[key]
