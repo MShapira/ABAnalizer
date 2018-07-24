@@ -5,7 +5,6 @@ from utility import create_session_folder
 
 
 def sequences_parser(filename: str)->list:
-
     antibodies = []
     str = ''
 
