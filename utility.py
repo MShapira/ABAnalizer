@@ -52,11 +52,12 @@ def sequences_parser(filename: str)->list:
 
                 # generate hot points in class initiating
                 laa = line.split('|')
+                name = laa[0][1:]
                 if len(laa) == 1:
-                    name = laa[0][1:]
                     host = None
                     res = None
                 else:
+
                     host = laa[2]
                     res = laa[3]
                 # initiate an object of class Antibody

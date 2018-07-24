@@ -1,11 +1,17 @@
 from analytics import calculate_position_distribution, construct_aa_prop_list, construct_property_profile
 from utility import create_session_folder, show_progress, print_to_log, sequences_parser
-from pprint import pprint
+import sys
 
 create_session_folder()
 kidera = construct_aa_prop_list()
-pprint(kidera)
-antibodies = sequences_parser('VHH_Dima.fas')
+print_to_log(str(kidera))
+print_to_log('#' * 30)
+
+# get filename and throw the warning if it is empty
+filename = sys.argv[-1]
+if filename == sys.argv[0]:
+    filename = input('Please, enter the data filename: ')
+antibodies = sequences_parser(filename)
 
 # smart bar for getting the time remaining
 progress_label = 'Processing the cdr and frameworks filling'
