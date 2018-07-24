@@ -5,7 +5,7 @@ from pprint import pprint
 create_session_folder()
 kidera = construct_aa_prop_list()
 pprint(kidera)
-antibodies = sequences_parser('VHH_al.fa')
+antibodies = sequences_parser('VHH_Dima.fas')
 
 # smart bar for getting the time remaining
 progress_label = 'Processing the cdr and frameworks filling'

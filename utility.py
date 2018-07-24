@@ -52,20 +52,25 @@ def sequences_parser(filename: str)->list:
 
                 # generate hot points in class initiating
                 laa = line.split('|')
-                name = laa[0][1:]
-                host = laa[2]
-                res = laa[3]
+                if len(laa) == 1:
+                    name = laa[0][1:]
+                    host = None
+                    res = None
+                else:
+                    host = laa[2]
+                    res = laa[3]
                 # initiate an object of class Antibody
                 # todo: write a filter to rid out of the sequence duplicates
                 antibody = Antibody(name=name, host=host, resource_of_origin=res)
 
-                # define what kind of seq do we have
-                if laa[5] == 'protein':
-                    antibody.protein_sequence = True
-                    antibody.nucleotide_sequence = False
-                elif laa[5] == 'nucleotide':
-                    antibody.protein_sequence = False
-                    antibody.nucleotide_sequence = True
+                # define what kind of seq do we have if it is exist
+                if len(laa) > 1:
+                    if laa[5] == 'protein':
+                        antibody.protein_sequence = True
+                        antibody.nucleotide_sequence = False
+                    elif laa[5] == 'nucleotide':
+                        antibody.protein_sequence = False
+                        antibody.nucleotide_sequence = True
                 antibodies.append(antibody)
 
             else:
