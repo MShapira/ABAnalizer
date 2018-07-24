@@ -130,9 +130,7 @@ def print_to_log(string):
 
     with open (file_name, 'a') as log:
         pp.pprint(string, stream=log)
-        # log.write(pprint.pformat(vars(string)))
-        # log.close()
-
+        log.close()
 
 
 # read data from csv file

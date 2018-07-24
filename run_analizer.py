@@ -25,10 +25,11 @@ for ab in antibodies:
     show_progress(progress_label, float(index) / float(len(antibodies)))
 
     ab.protein_sequence.identify_cdrs_and_frameworks()
+    print_to_log('Numbering scheme: {0}'.format(ab.protein_sequence.scheme))
     print_to_log('Name: {0}'.format(ab.name))
     print_to_log('Host organism: {0}'.format(ab.host))
     print_to_log('Resource: {0}'.format(ab.resource_of_origin))
-    print_to_log('Sequence: {0}'.format(ab.protein_sequence))
+    print_to_log('{0}'.format(ab.protein_sequence))
     print_to_log('-' * 30)
 print_to_log("#" * 30)
 aad = calculate_position_distribution(antibodies)

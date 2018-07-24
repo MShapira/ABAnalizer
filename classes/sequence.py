@@ -10,13 +10,14 @@ class ProteinSequence:
         self.seq_dict = {}
         self.frameworks = {}
         self.CDRs = {}
+        self.scheme = 'chothia'
 
     # construct dictionary of aminoacids via its numbering
-    def construct_seq_dict(self, scheme: str ='c'):
+    def construct_seq_dict(self):
 
         # get ANARCI results
         # todo: add an opportunity to choose method ("chotia" is default)
-        anarci_result = subprocess.Popen(['ANARCI -i' + self.whole_seq + ' -s {0}'.format(scheme)],
+        anarci_result = subprocess.Popen(['ANARCI -i' + self.whole_seq + ' -s {0}'.format(self.scheme)],
                                          shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         # todo: write an additional utility for detection of the nearest species
         for line in anarci_result.stdout.readlines():
@@ -39,7 +40,7 @@ class ProteinSequence:
         self.seq_dict = OrderedDict(natsorted(self.seq_dict.items(), key=lambda d: d[0]))
 
     # create a dict with CDRs and frameworks
-    def identify_cdrs_and_frameworks(self, scheme='c'):
+    def identify_cdrs_and_frameworks(self, scheme='chothia'):
 
         # initialize all parts of sequence
         self.frameworks['fr_1'] = []
@@ -81,7 +82,7 @@ class ProteinSequence:
                     self.frameworks[fr_name].append(key)
 
         # working only with chotia numeration
-        if scheme == 'c':
+        if scheme == 'chothia':
             if self.chain == 'Heavy':
 
                 # fill the first framework
