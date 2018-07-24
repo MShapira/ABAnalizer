@@ -1,4 +1,6 @@
 import subprocess
+from collections import OrderedDict, Counter
+from natsort import natsorted
 
 
 class ProteinSequence:
@@ -8,13 +10,14 @@ class ProteinSequence:
         self.seq_dict = {}
         self.frameworks = {}
         self.CDRs = {}
+        self.scheme = 'chothia'
 
     # construct dictionary of aminoacids via its numbering
-    def construct_seq_dict(self, scheme='c'):
+    def construct_seq_dict(self):
 
         # get ANARCI results
-        # todo: add an opportunity to choose method (chotia is default)
-        anarci_result = subprocess.Popen(['ANARCI -i' + self.whole_seq + ' -s {0}'.format(scheme)],
+        # todo: add an opportunity to choose method ("chotia" is default)
+        anarci_result = subprocess.Popen(['ANARCI -i' + self.whole_seq + ' -s {0}'.format(self.scheme)],
                                          shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         # todo: write an additional utility for detection of the nearest species
         for line in anarci_result.stdout.readlines():
@@ -33,73 +36,118 @@ class ProteinSequence:
                     if line.split('|')[1] == "L":
                         self.chain = "Light"
 
-    # create a dict with CDRs sequences and frameworks sequences
-    def identify_cdrs_and_frameworks(self, scheme='c'):
+        # turn our dict to ordered dict (special class) and ordering by key
+        self.seq_dict = OrderedDict(natsorted(self.seq_dict.items(), key=lambda d: d[0]))
+
+    # create a dict with CDRs and frameworks
+    def identify_cdrs_and_frameworks(self, scheme='chothia'):
 
         # initialize all parts of sequence
-        self.frameworks['fr_1'] = ''
-        self.frameworks['fr_2'] = ''
-        self.frameworks['fr_3'] = ''
-        self.frameworks['fr_4'] = ''
-        self.CDRs['cdr_1'] = ''
-        self.CDRs['cdr_2'] = ''
-        self.CDRs['cdr_3'] = ''
+        self.frameworks['fr_1'] = []
+        self.frameworks['fr_2'] = []
+        self.frameworks['fr_3'] = []
+        self.frameworks['fr_4'] = []
+        self.CDRs['cdr_1'] = []
+        self.CDRs['cdr_2'] = []
+        self.CDRs['cdr_3'] = []
 
-        if scheme == 'c':
+        # define and count the number of positions with additional letters
+        positions_with_additional_letters = []
+        additional_aa = []
+        for key in self.seq_dict.keys():
+            try:
+                int(key)
+            except ValueError:
+                additional_aa.append(key)
+                positions_with_additional_letters.append(int(key[:-1]))
+                continue
+        counter = Counter(positions_with_additional_letters)
+
+        # construct the CDR region due to the last position in it
+        def construct_cdr(end: int, cdr_name: str):
+            if key not in additional_aa:
+                if int(key) < end:
+                    self.CDRs[cdr_name].append(key)
+            else:
+                if int(key[:-1]) < end:
+                    self.CDRs[cdr_name].append(key)
+
+        # construct the framework region due to the last position in it
+        def construct_fr(end: int, fr_name: str):
+            if key not in additional_aa:
+                if int(key) < end:
+                    self.frameworks[fr_name].append(key)
+            else:
+                if int(key[:-1]) < end:
+                    self.frameworks[fr_name].append(key)
+
+        # working only with chotia numeration
+        if scheme == 'chothia':
             if self.chain == 'Heavy':
+
                 # fill the first framework
-                self.frameworks['fr_1'] = self.whole_seq[:25]
-
-                # fill the first CDR and second frameworks
-                if '35A' in self.seq_dict.keys() and '35B' in self.seq_dict.keys():
-                    self.CDRs['cdr_1'] = self.whole_seq[25:34]
-                    self.frameworks['fr_2'] = self.whole_seq[34:51]
-                elif '35A' in self.seq_dict.keys():
-                    self.CDRs['cdr_1'] = self.whole_seq[25:33]
-                    self.frameworks['fr_2'] = self.whole_seq[33:51]
-                else:
-                    self.CDRs['cdr_1'] = self.whole_seq[25:32]
-                    self.frameworks['fr_2'] = self.whole_seq[32:51]
-
-                # fill the CDR 2
-                self.CDRs['cdr_2'] = self.whole_seq[51:56]
-
-                # calculate the number of 82 aa and define the length of sequence part for fr_3
-                count82 = 0
                 for key in self.seq_dict.keys():
-                    try:
-                        key.index('82')
-                    except ValueError:
-                        continue
-                    else:
-                        count82 += 1
-                self.frameworks['fr_3'] = self.whole_seq[56:93+count82]
+                    construct_fr(end=26, fr_name='fr_1')
 
-                # calculate the number of 100 aa and define the length of sequence part for cdr_3
-                count100 = 0
+                # fill the first CDR
                 for key in self.seq_dict.keys():
-                    try:
-                        key.index('100')
-                    except ValueError:
-                        continue
-                    else:
-                        count100 += 1
-                self.CDRs['cdr_3'] = self.whole_seq[93+count82:101+count100]
+                    if key not in self.frameworks['fr_1']:
+                        # check if the 35 position has additional letters
+                        if 35 in positions_with_additional_letters:
+                            if counter[35] >= 2:
+                                construct_cdr(end=35, cdr_name='cdr_1')
+                            elif counter[35] == 1:
+                                construct_cdr(end=34, cdr_name='cdr_1')
+                        else:
+                            construct_cdr(end=33, cdr_name='cdr_1')
 
-                # fill the framework 4
-                self.frameworks['fr_4'] = self.whole_seq[101+count100:]
+                # fill the second framework
+                for key in self.seq_dict.keys():
+                    if key not in self.frameworks['fr_1'] and key not in self.CDRs['cdr_1']:
+                        construct_fr(end=52, fr_name='fr_2')
 
-                # code for development
-                print('Framework 1: {0}'.format(self.frameworks['fr_1']))
-                print('CDR 1: {0}'.format(self.CDRs['cdr_1']))
-                print('Framework 2: {0}'.format(self.frameworks['fr_2']))
-                print('CDR 2: {0}'.format(self.CDRs['cdr_2']))
-                print('Framework 3: {0}'.format(self.frameworks['fr_3']))
-                print('CDR 3: {0}'.format(self.CDRs['cdr_3']))
-                print('Framework 4: {0}'.format(self.frameworks['fr_4']))
+                # fill the second CDR
+                for key in self.seq_dict.keys():
+                    if key not in self.frameworks['fr_1'] and key not in self.CDRs['cdr_1'] and \
+                                    key not in self.frameworks['fr_2']:
+                        construct_cdr(end=57, cdr_name='cdr_2')
 
+                # fill the third framework
+                for key in self.seq_dict.keys():
+                    if key not in self.frameworks['fr_1'] and key not in self.CDRs['cdr_1'] and \
+                                    key not in self.frameworks['fr_2'] and key not in self.CDRs['cdr_2']:
+                        construct_fr(end=95, fr_name='fr_3')
+
+                # fill the third CDR
+                for key in self.seq_dict.keys():
+                    if key not in self.frameworks['fr_1'] and key not in self.CDRs['cdr_1'] and \
+                                    key not in self.frameworks['fr_2'] and key not in self.CDRs['cdr_2'] and \
+                                    key not in self.frameworks['fr_3']:
+                        construct_cdr(end=102, cdr_name='cdr_3')
+
+                # fill the fourth framework
+                for key in self.seq_dict.keys():
+                    if key not in self.frameworks['fr_1'] and key not in self.CDRs['cdr_1'] and \
+                                    key not in self.frameworks['fr_2'] and key not in self.CDRs['cdr_2'] and \
+                                    key not in self.frameworks['fr_3'] and key not in self.CDRs['cdr_3']:
+                        construct_fr(end=len(self.seq_dict.keys())+1, fr_name='fr_4')
+
+    # generate a str from list of keys to self.seq_dict
+    def get_seq_from_keys_list(self, keys_list: list):
+        str = ''
+        for key in keys_list:
+            str += self.seq_dict[key]
+
+        return str
 
     def __str__(self):
         return 'Whole Sequence: {0}\n'.format(self.whole_seq) + \
                'Chain: {0}\n'.format(self.chain) + \
+               'Framework 1: {0}\n'.format(self.get_seq_from_keys_list(self.frameworks['fr_1'])) + \
+               'CDR 1: {0}\n'.format(self.get_seq_from_keys_list(self.CDRs['cdr_1'])) + \
+               'Framework 2: {0}\n'.format(self.get_seq_from_keys_list(self.frameworks['fr_2'])) + \
+               'CDR 2: {0}\n'.format(self.get_seq_from_keys_list(self.CDRs['cdr_2'])) + \
+               'Framework 3: {0}\n'.format(self.get_seq_from_keys_list(self.frameworks['fr_3'])) + \
+               'CDR 3: {0}\n'.format(self.get_seq_from_keys_list(self.CDRs['cdr_3'])) + \
+               'Framework 4: {0}\n'.format(self.get_seq_from_keys_list(self.frameworks['fr_4'])) + \
                '\n'
