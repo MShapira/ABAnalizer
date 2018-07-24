@@ -7,8 +7,7 @@ import matplotlib.pyplot as plt
 from pandas import read_csv
 from matplotlib.ticker import FuncFormatter
 import numpy as np
-import gc
-
+import pprint as pp
 
 # parsing of data file with sequences
 def sequences_parser(filename: str)->list:
@@ -19,7 +18,7 @@ def sequences_parser(filename: str)->list:
 
     with open(filename) as file:
         # filter the empty lines
-        lines = filter(lambda x: len(x)>1, file.readlines())
+        lines = list(filter(lambda x: len(x)>1, file.readlines()))
 
         # smart bar for getting the time remaining
         progress_label = 'Parsing the input data'
@@ -62,7 +61,6 @@ def sequences_parser(filename: str)->list:
                     host = laa[2]
                     res = laa[3]
                 # initiate an object of class Antibody
-                # todo: write a filter to rid out of the sequence duplicates
                 antibody = Antibody(name=name, host=host, resource_of_origin=res)
 
                 # define what kind of seq do we have if it is exist
@@ -125,14 +123,16 @@ def create_session_folder() -> str:
 
 
 # print data to log file instead of terminal output
-def print_to_log(string: str):
+def print_to_log(string):
     with open('sessions/folder_name.txt', 'r') as file:
         file_name = file.readline().rstrip() + '/session.log'
         file.close()
 
     with open (file_name, 'a') as log:
-        log.write(string + '\n')
-        log.close()
+        pp.pprint(string, stream=log)
+        # log.write(pprint.pformat(vars(string)))
+        # log.close()
+
 
 
 # read data from csv file

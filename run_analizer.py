@@ -4,7 +4,7 @@ import sys
 
 create_session_folder()
 kidera = construct_aa_prop_list()
-print_to_log(str(kidera))
+print_to_log(kidera)
 print_to_log('#' * 30)
 
 # get filename and throw the warning if it is empty
