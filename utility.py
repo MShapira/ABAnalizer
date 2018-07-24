@@ -18,7 +18,8 @@ def sequences_parser(filename: str)->list:
     str = ''
 
     with open(filename) as file:
-        lines = file.readlines()
+        # filter the empty lines
+        lines = filter(lambda x: len(x)>1, file.readlines())
 
         # smart bar for getting the time remaining
         progress_label = 'Parsing the input data'
