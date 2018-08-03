@@ -211,16 +211,18 @@ def generate_distribution_matrix(aad):
 
     # begin to write to csv
     with open(filename, 'w') as csvfile:
-        fieldnames = ['Position', aminoacids]
+        fieldnames = ['Position'] + aminoacids
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
 
+        # add amino acids with zero percent to dictionary
         for key in natsorted(aad.positions.keys()):
             for aa in aminoacids:
                 if aa not in aad.positions[key].parts_dict.keys():
                     aad.positions[key].parts_dict[aa] = 0.0
 
+            # form the row to write and write it down
             position = {'Position': key}
             data = {**position, **aad.positions[key].parts_dict}
             writer.writerow(data)
