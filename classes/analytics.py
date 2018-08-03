@@ -1,5 +1,6 @@
 from collections import Counter
 from utility import generate_bar_chart
+from natsort import natsorted
 
 
 class PositionDistribution:
@@ -24,7 +25,7 @@ class PositionDistribution:
             self.parts_dict[position[0]] = position[1]/sum
 
     # generate picture of the distribution
-    def generate_aa_distribution_pict(self):
+    def generate_aa_distribution(self):
         with open('sessions/folder_name.txt', 'r') as file:
             file_lines = file.readlines()
             file.close()
@@ -39,7 +40,7 @@ class PositionDistribution:
                 percents.append(0.0)
                 continue
 
-        generate_bar_chart(xlabels=aminoacids, percents=percents, position=self.position, fld_name='aa_distribution')
+        # generate_bar_chart(xlabels=aminoacids, percents=percents, position=self.position, fld_name='aa_distribution')
 
     def __str__(self):
         return 'Position: {0}\n'.format(self.position) + \

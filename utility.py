@@ -8,6 +8,8 @@ from pandas import read_csv
 from matplotlib.ticker import FuncFormatter
 import numpy as np
 import pprint as pp
+from natsort import natsorted
+import csv
 
 # parsing of data file with sequences
 def sequences_parser(filename: str)->list:
@@ -194,3 +196,33 @@ def generate_linear_chart(x: list, y: list, xlabel: str, ylabel: str, fld_name: 
         # saving the file to the folder inside the session
         plt.savefig(folder_name + file_name)
         plt.close()
+
+
+# generate distribution matrix and save it to the file
+def generate_distribution_matrix(aad):
+
+    # get the aa list and filename
+    with open('sessions/folder_name.txt', 'r') as file:
+        filename = file.readline().rstrip() + '/distribution_matrix.csv'
+        aminoacids = [x for x in file.readlines()[0][:-1]]
+        aminoacids.append('-')
+        print(aminoacids)
+        file.close()
+
+    # begin to write to csv
+    with open(filename, 'w') as csvfile:
+        fieldnames = ['Position', aminoacids]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+
+        for key in natsorted(aad.positions.keys()):
+            for aa in aminoacids:
+                if aa not in aad.positions[key].parts_dict.keys():
+                    aad.positions[key].parts_dict[aa] = 0.0
+
+            position = {'Position': key}
+            data = {**position, **aad.positions[key].parts_dict}
+            writer.writerow(data)
+
+        csvfile.close()

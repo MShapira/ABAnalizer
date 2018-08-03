@@ -1,6 +1,7 @@
 from analytics import calculate_position_distribution, construct_aa_prop_list, construct_property_profile
-from utility import create_session_folder, show_progress, print_to_log, sequences_parser
+from utility import create_session_folder, show_progress, print_to_log, sequences_parser, generate_distribution_matrix
 import sys
+
 
 create_session_folder()
 kidera = construct_aa_prop_list()
@@ -33,6 +34,7 @@ for ab in antibodies:
     print_to_log('-' * 30)
 print_to_log("#" * 30)
 aad = calculate_position_distribution(antibodies)
+generate_distribution_matrix(aad)
 
 prop_list = [x for x in kidera['ALA'] if isinstance(kidera['ALA'][x], (float, int))]
-construct_property_profile(aad, prop_list, kidera)
+# construct_property_profile(aad, prop_list, kidera)
